@@ -1,4 +1,6 @@
 import os
+import pickle
+
 os.system('cls' if os.name == 'nt' else 'clear')
 class Irasas:
     def __init__(self, suma: float, komentaras: str) -> str:
@@ -28,6 +30,11 @@ class Pajamos(Irasas):
 
 class Biudzetas:
     __zurnalas = []
+
+    def __init__(self):
+        if os.path.exists("data.pickle"):
+            with open("data.pickle", "rb") as f:
+                self.__zurnalas = pickle.load(f)
 
     def __balansas(self):
         pajamos = sum([irasas.suma for irasas in self.__zurnalas if isinstance(irasas, Pajamos)])
@@ -63,6 +70,8 @@ class Biudzetas:
     
     def ivesti_pajamas(self, irasas):
         self.__zurnalas.append(irasas)
+        with open("data.pickle", "wb") as f:
+            pickle.dump(self.__zurnalas, f)
 
 
 biudzetas = Biudzetas()
@@ -120,8 +129,7 @@ while True:
     elif meniu == 2:
         ivesti_islaidas(biudzetas)
     elif meniu == 3:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        biudzetas.ataskaita() 
+        biudzetas.ataskaita()
     elif meniu == 0:
         break
     else:
