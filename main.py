@@ -1,7 +1,17 @@
 import os
 import pickle
+import logging
 
 os.system('cls' if os.name == 'nt' else 'clear')
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('istorija.log')
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+logger.info('Programa paleista')
+
 class Irasas:
     def __init__(self, suma: float, komentaras: str) -> str:
         """
@@ -47,6 +57,7 @@ class Biudzetas:
         """
         Atspausdina biudžeto žurnalą.
         """
+        logger.info('Patikrinta saskaita')
         print(self.get_balansas_string())
         for irasas in self.__zurnalas:
             if isinstance(irasas, Pajamos):
@@ -88,6 +99,7 @@ def ivesti_pajamas(biudzetas: Biudzetas) -> None:
             break
         except ValueError as e:
             print(e)
+        logger.warning('Pajamu suma negali buti neigiama')
             
     siuntejas = input("Įveskite pajamų siuntėją ir spauskite 'Enter': ")
     komentaras = input("Įveskite komentarą ir spauskite 'Enter': ")
@@ -95,6 +107,10 @@ def ivesti_pajamas(biudzetas: Biudzetas) -> None:
     biudzetas.ivesti_pajamas(pajamos)
     print("")
     print(f"Pajamos {suma:.2f} € buvo pridėtos prie biudžeto.")
+    # logger.debug('This is a debug message')
+    logger.info(f'Pajamos: {suma:.2f} euru buvo prideta i saskaita')
+    # logger.warning('This is a warning message')
+    # logger.error('This is an error message')
     print(biudzetas.get_balansas_string())
 
 def ivesti_islaidas(biudzetas: Biudzetas) -> None:
@@ -106,9 +122,11 @@ def ivesti_islaidas(biudzetas: Biudzetas) -> None:
             break
         except ValueError as e:
             print(e)
+        logger.warning('Islaidu suma negali buti neigiama')
             
     gavejas = input("Įveskite išlaidų gavėją: ")
     komentaras = input("Įveskite komentarą: ")
+    logger.info(f'Islaidos: {suma:.2f} buvo issiusta is saskaitos')
     islaidos = Islaidos(suma, komentaras, gavejas)
     biudzetas.ivesti_pajamas(islaidos)
     print(f"Išlaidos {suma:.2f} € buvo išimta iš biudžeto.")
@@ -131,6 +149,7 @@ while True:
     elif meniu == 3:
         biudzetas.ataskaita()
     elif meniu == 0:
+        logger.info('Programa baigta')
         break
     else:
         print("\n\033[1;31;40mNeteisingas pasirinkimas, bandykite dar kartą!\033[0m\n")
